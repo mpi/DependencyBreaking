@@ -23,39 +23,26 @@ public class LoanCalculator {
             return;
         }
         
-        int rateDesc = (int)Math.ceil(loan/months);
-        int[] ratesDescending = new int[months + 1];
-        int[] remainingLoanDescending = new int[months + 1];
-        remainingLoanDescending[0] = loan;
-        ratesDescending[0] = 0;
-
-        double q = 1 + percent/12;
-        int rateConst = (int)Math.ceil(loan * Math.pow(q, months)*((q - 1)/(Math.pow(q, months)-1)));
-        int[] ratesConstant = new int[months + 1];
-        int[] remainingLoanConstant = new int[months + 1];
-        remainingLoanConstant[0] = loan;
-        ratesConstant[0] = 0;
+        int rate = (int)Math.ceil(loan/months);
+        int[] rates = new int[months + 1];
+        int[] remainingLoan = new int[months + 1];
+        remainingLoan[0] = loan;
+        rates[0] = 0;
 
         for(int i=1; i<months; i++){
             
-            ratesDescending[i] = rateDesc + (int)Math.ceil(remainingLoanDescending[i-1] * percent / 12);
-            remainingLoanDescending[i] = remainingLoanDescending[i-1] - rateDesc;
+            rates[i] = rate + (int)Math.ceil(remainingLoan[i-1] * percent / 12);
+            remainingLoan[i] = remainingLoan[i-1] - rate;
             
-            ratesConstant[i] = rateConst;
-            remainingLoanConstant[i] = (int)(remainingLoanConstant[i-1]*q - rateConst);
         }
-        ratesDescending[months] = remainingLoanDescending[months-1];
-        remainingLoanDescending[months] = 0;
-
-        ratesConstant[months] = remainingLoanConstant[months-1];
-        remainingLoanConstant[months] = 0;
+        rates[months] = remainingLoan[months-1];
+        remainingLoan[months] = 0;
 
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
         for (int i=0; i <= months; i++) {
             Integer m = Integer.valueOf(i);
-            dataset.setValue(remainingLoanDescending[i], "Rata malejąca", m);
-            dataset.setValue(remainingLoanConstant[i], "Rata stała", m);
+            dataset.setValue(remainingLoan[i], "Rata malejąca", m);
         }
         
         JFreeChart chart = 
